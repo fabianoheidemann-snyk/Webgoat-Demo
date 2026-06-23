@@ -23,6 +23,9 @@ jobs:
         run: snyk test
         continue-on-error: true
 
+      - name: Build Docker Image
+        run: docker build -t ml-pipeline:${{github.sha}}
+
       - name: Run Snyk Container Test
-        run: snyk container test
+        run: snyk container test ml-pipeline:${{github.sha}} --file=Dockerfile
         continue-on-error: true
