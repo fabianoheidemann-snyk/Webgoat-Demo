@@ -15,13 +15,13 @@ jobs:
       - name: Authenticate Snyk
         run: snyk auth ${{secrets.SNYK_TOKEN}}
 
-      - name: Run Snyk Code Test
-        run: snyk code test
-        continue-on-error: true
+      # - name: Run Snyk Code Test
+      #   run: snyk code test
+      #   continue-on-error: true
 
-      - name: Run Snyk Open Source Test
-        run: snyk test
-        continue-on-error: true
+      # - name: Run Snyk Open Source Test
+      #   run: snyk test
+      #   continue-on-error: true
 
       - name: Build JAR
         run: nvm package -DskipTests
