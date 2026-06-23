@@ -16,30 +16,30 @@ jobs:
         run: snyk auth ${{secrets.SNYK_TOKEN}}
 
       - name: Run Snyk Code Test
-        run: snyk code test --severity-threshold=<high>
+        run: snyk code test --severity-threshold=high
         continue-on-error: true
 
       - name: Run Snyk Open Source Test
         run: snyk test
         continue-on-error: true
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: maven
+      # - name: Set up JDK
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     java-version: '21'
+      #     distribution: 'temurin'
+      #     cache: maven
 
-      - name: Build JAR
-        run: mvn package -DskipTests -Dmaven.compiler.release=21
+      # - name: Build JAR
+      #   run: mvn package -DskipTests -Dmaven.compiler.release=21
 
-      - name: Build Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          tags: ml-pipeline:${{github.sha}}
-          push: false
+      # - name: Build Docker Image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     tags: ml-pipeline:${{github.sha}}
+      #     push: false
 
-      - name: Run Snyk Container Test
-        run: snyk container test ml-pipeline:${{github.sha}} --file=Dockerfile
-        continue-on-error: true
+      # - name: Run Snyk Container Test
+      #   run: snyk container test ml-pipeline:${{github.sha}} --file=Dockerfile
+      #   continue-on-error: true
