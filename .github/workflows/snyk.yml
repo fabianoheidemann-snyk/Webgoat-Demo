@@ -23,6 +23,9 @@ jobs:
         run: snyk test
         continue-on-error: true
 
+      - name: Build JAR
+        run: nvm package -DskipTests
+
       - name: Build Docker Image
         uses: docker/build-push-action@v5
         with:
