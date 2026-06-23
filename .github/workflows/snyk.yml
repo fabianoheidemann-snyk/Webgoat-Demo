@@ -31,7 +31,7 @@ jobs:
           cache: maven
 
       - name: Build JAR
-        run: mvn package -DskipTests
+        run: mvn package -DskipTests -Dmaven.compiler.release=21
 
       - name: Build Docker Image
         uses: docker/build-push-action@v5
