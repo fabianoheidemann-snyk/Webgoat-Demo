@@ -23,6 +23,13 @@ jobs:
       #   run: snyk test
       #   continue-on-error: true
 
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
       - name: Build JAR
         run: mvn package -DskipTests
 
