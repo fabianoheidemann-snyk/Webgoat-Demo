@@ -3,11 +3,19 @@ name: Snyk Scan Tools
 on:
   workflow_dispatch
 
+  # ────────────────────────────────────────────────
+  # 0. Virtual Machine / Actions
+  # ────────────────────────────────────────────────
+
 jobs:
   snyk-setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
+  # ────────────────────────────────────────────────
+  # 1. Snyk Install / Authenticate
+  # ────────────────────────────────────────────────
       
       - name: Install Snyk CLI
         run: npm install -g snyk
@@ -15,31 +23,51 @@ jobs:
       - name: Authenticate Snyk
         run: snyk auth ${{secrets.SNYK_TOKEN}}
 
+  # ────────────────────────────────────────────────
+  # 2. Snyk Code — SAST / static analysis
+  # ────────────────────────────────────────────────
+
       - name: Run Snyk Code Test
         run: snyk code test --severity-threshold=high
         continue-on-error: true
+
+  # ────────────────────────────────────────────────
+  # 3. Snyk Open Source — dependency / SCA scanning
+  # ────────────────────────────────────────────────
 
       - name: Run Snyk Open Source Test
         run: snyk test
         continue-on-error: true
 
-      # - name: Set up JDK
-      #   uses: actions/setup-java@v4
-      #   with:
-      #     java-version: '21'
-      #     distribution: 'temurin'
-      #     cache: maven
+  # ────────────────────────────────────────────────
+  # 4. Build Application
+  # ────────────────────────────────────────────────
 
-      # - name: Build JAR
-      #   run: mvn package -DskipTests -Dmaven.compiler.release=21
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
-      # - name: Build Docker Image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     tags: ml-pipeline:${{github.sha}}
-      #     push: false
+      - name: Build JAR
+        run: mvn package -DskipTests -Dmaven.compiler.release=21
 
-      # - name: Run Snyk Container Test
-      #   run: snyk container test ml-pipeline:${{github.sha}} --file=Dockerfile
-      #   continue-on-error: true
+  # ────────────────────────────────────────────────
+  # 5. Build Contanier
+  # ────────────────────────────────────────────────
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          tags: ml-pipeline:${{github.sha}}
+          push: false
+
+  # ────────────────────────────────────────────────
+  # 6. Snyk Container — image vulnerability scanning
+  # ────────────────────────────────────────────────
+
+      - name: Run Snyk Container Test
+        run: snyk container test ml-pipeline:${{github.sha}} --file=Dockerfile
+        continue-on-error: true
